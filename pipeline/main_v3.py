@@ -120,8 +120,8 @@ class PipelineDatabase:
         self.dataset_manager = data_manager
         self.tolerance = 0.6
     
-    def pipeline(self, image_path):
-        image = self.embeddings_process.import_image(image_path)
+    def pipeline(self, image):
+        # image = self.embeddings_process.import_image(image_path)
         detected_faces = self.embeddings_process.detect_face(image)
         for i, det_face in enumerate(detected_faces):
             landmarks_face = self.embeddings_process.pose_68_point_model(image, det_face)
@@ -298,20 +298,26 @@ if __name__ == "__main__":
     # Open the camera
     cap = cv2.VideoCapture(camera_index)
 
+    frame_skip = 60  # Process every 5th frame
+    frame_count = 0
+
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break  # Exit loop if there are no more frames
 
-        # Process the frame for face embeddings
-        face_info_list = pipeline_db.pipeline(frame)
+        # Only process every 'frame_skip' frames
+        if frame_count % frame_skip == 0:
+            face_info_list = pipeline_db.pipeline(frame)
 
-        # Optional: Display the frame (you can add any visualization here)
+        # Optional: Display the frame
         cv2.imshow("Camera Feed", frame)
 
         # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+        frame_count += 1  # Increment the frame counter
 
     cap.release()  # Release the camera
     cv2.destroyAllWindows()  # Close all OpenCV windows
