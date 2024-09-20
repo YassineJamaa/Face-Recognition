@@ -293,9 +293,9 @@ if __name__ == "__main__":
 
     # Initialize the class PipelineDatabase
     pipeline_db = PipelineDatabase(dataset_manager, face_embeddings)
-    pipeline_db.pipeline(img_paths[2])
-    pipeline_db.pipeline(img_paths[1])
     pipeline_db.pipeline(img_paths[0])
+    pipeline_db.pipeline(img_paths[1])
+    pipeline_db.pipeline(img_paths[2])
     # Set up the Tkinter root window
     root = tk.Tk()
     gui = FaceDatabaseGUI(root, pipeline_db.dataset_manager)

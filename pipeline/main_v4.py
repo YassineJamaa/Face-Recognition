@@ -356,11 +356,12 @@ if __name__ == "__main__":
     frame_skip = 60  # Process every N-th frame
     frame_count = 0
     start = time.time()
+
+    # Assuming `webcam_stream` is a thread-safe object
     while True:
+        frame = webcam_stream.read()
         if webcam_stream.stopped is True:
             break  # Exit loop if there are no more frames
-        else:
-            frame = webcam_stream.read()
 
         # Only process every 'frame_skip' frames
         if frame_count % frame_skip == 0:
@@ -375,15 +376,14 @@ if __name__ == "__main__":
 
         frame_count += 1  # Increment the frame counter
 
-    end = time.time()
-    webcam_stream.stop() # stop the webcam stream 
+    # Stop the webcam stream
+    webcam_stream.stop() 
 
-    # printing time elapsed and fps 
-    elapsed = end-start
-    fps = frame_count/elapsed 
+    end = time.time()
+    elapsed = end - start
+    fps = frame_count / elapsed if elapsed > 0 else 0  # Prevent division by zero
     print("FPS: {} , Elapsed Time: {} , Frames Processed: {}".format(fps, elapsed, frame_count))
     cv2.destroyAllWindows()  # Close all OpenCV windows
-
     # Set up the Tkinter root window
     root = tk.Tk()
     gui = FaceDatabaseGUI(root, pipeline_db.dataset_manager)

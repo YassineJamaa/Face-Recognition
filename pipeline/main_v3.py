@@ -7,6 +7,9 @@ import os
 import tkinter as tk
 from tkinter import Label, Button, Entry, filedialog
 from PIL import Image, ImageTk
+import threading
+import queue
+import time
 
 # code source: https://openface-api.readthedocs.io/en/latest/_modules/openface/align_dlib.html#AlignDlib
 # Create class AlignFace to detect landmarks + centered the face
@@ -278,6 +281,8 @@ class FaceDatabaseGUI:
         self.load_face_data()
 
 
+
+
 if __name__ == "__main__":
     # Use 0 for the default camera
     camera_index = 0
@@ -298,17 +303,17 @@ if __name__ == "__main__":
     # Open the camera
     cap = cv2.VideoCapture(camera_index)
 
-    frame_skip = 60  # Process every 5th frame
+    frame_skip = 60  # Process every N-th frame
     frame_count = 0
-
+    start = time.time()
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break  # Exit loop if there are no more frames
 
-        # Only process every 'frame_skip' frames
-        if frame_count % frame_skip == 0:
-            face_info_list = pipeline_db.pipeline(frame)
+        # # Only process every 'frame_skip' frames
+        # if frame_count % frame_skip == 0:
+        #     face_info_list = pipeline_db.pipeline(frame)
 
         # Optional: Display the frame
         cv2.imshow("Camera Feed", frame)
@@ -318,8 +323,12 @@ if __name__ == "__main__":
             break
 
         frame_count += 1  # Increment the frame counter
-
+    end = time.time()
     cap.release()  # Release the camera
+    # printing time elapsed and fps 
+    elapsed = end-start
+    fps = frame_count/elapsed 
+    print("FPS: {} , Elapsed Time: {} , Frames Processed: {}".format(fps, elapsed, frame_count))
     cv2.destroyAllWindows()  # Close all OpenCV windows
 
     # Set up the Tkinter root window
